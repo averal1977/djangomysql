@@ -1,0 +1,226 @@
+Documents 		pip install virtualenv
+Documents		mkdir test_app
+Documents		cd test_app
+test_app		virtualenv test_app_v1
+test_app		cd test_app_v1
+(test_app_v1)	cd Scripts
+(test_app_v1)	.\activate
+(test_app_v1)	test_app_v1 pip install Django
+(test_app_v1)	test_app_v1 django-admin startproject ReservaCanchas
+(test_app_v1)	test_app_v1 ls
+ReservaCanchas	bin	lib	pyenv.cfg
+(test_app_v1)	test_app_v1 cd ReservaCanchas
+(test_app_v1)	ReservaCanchas python manage.py migrate
+(test_app_v1)	ReservaCanchas python manage.py startapp Reserva
+(test_app_v1)	ReservaCanchas python manage.py runserver 
+
+
+Instalar la versión actual del cliente de MySQL para python
+-----------------------------------------------------------
+(test_app_v1)	ReservaCanchas pip install pymysql
+__init__.py
+import pymysql
+pymysql.install_as_MySQLdb()
+
+
+Modificar el archivo settings.py
+ -----------------------------------------------------------
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nombre_db',
+        'USER': 'usuario_db',
+        'PASSWORD': 'contrasena_db',
+        'HOST': '127.0.0.1',
+        'PORT': 3306,
+    }
+}
+
+(test_app_v1)	ReservaCanchas python manage.py migrate
+
+
+
+
+
+
+
+
+
+Pasos nya despues cuando quieras levantar el servidor:
+cd test_app
+cd test_app_v1
+cd Scripts
+.\activate
+cd ..
+cd ReservaCanchas
+python manage.py runserver
+
+
+.\deactivate
+ctrl+c
+
+----------------------------------------------------------------------------------------
+.\activate.bat
+
+ejecutar con proxy:
+pip install --proxy http://laboratorio:l@bor@tor1o@david.espol.edu.ec:8080 mysql-connector-python
+pip install --proxy http://laboratorio:l@bor@tor1o@david.espol.edu.ec:8080 pymysql
+
+ejecutar sin proxy:
+pip install mysql-connector-python
+
+python manage.py migrate
+python manage.py makemigrations
+python manage.py runserver
+----------------------------------------------------------------------------------------
+
+
+
+
+
+Modelos:
+Persona
+	id_persona
+	nombre	char(30)
+	apellido	char(30)
+	cedula	char(10)
+	correo	char(50)
+	telefono	char(30)
+
+Cancha
+	id_cancha
+	nombre
+	tiene_vestuario
+	tiene_ilumincacion
+	tiene_cesped_sintetico
+	costo_reserva
+	medida
+
+Pago
+
+Reserva
+	cliente
+	fecha_reserva
+	fecha_turno
+	hora turno
+
+Horario
+
+
+
+class Persona (models.Model):
+
+
+Cancha
+	nombre		char(30)
+	descripcion		char(200)
+	esta_dsiponible	Boolean
+
+
+Documents 		pip install virtualenv
+Documents		mkdir test_app
+Documents		cd test_app
+test_app		virtualenv test_app_v1
+test_app		cd test_app_v1
+(test_app_v1)	cd Scripts
+(test_app_v1)	.\activate
+(test_app_v1)	cd ..
+(test_app_v1)	test_app_v1 pip install Django
+
+			pip install pymysql
+
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+cd test_app
+cd test_app_v1
+cd Scripts
+.\activate
+cd ..
+(test_app_v1)	test_app_v1 django-admin startproject ConcertBay
+(test_app_v1)	test_app_v1 ls
+ConcertBay	bin	lib	pyenv.cfg
+(test_app_v1)	test_app_v1 cd ConcertBay
+(test_app_v1)	ConcertBay python manage.py migrate
+(test_app_v1)	ConcertBay python manage.py startapp Concert
+(test_app_v1)	ConcertBay python manage.py runserver 
+
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'concertbay',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': 3306,
+    }
+}
+
+
+
+
+ConcertBay
+
+
+
+
+from django.db import models
+from django.utils import timezone
+from datetime import date
+
+# Create your models here.
+class Artista (models.Model):
+    nombre_artistico = models.CharField(max_length=30)
+    nombre = models.CharField(max_length=30)
+    apellido = models.CharField(max_length=30)
+    nacionalidad = models.CharField(max_length=50, null=True, blank=True)
+
+class Cliente (models.Model):
+    nombre = models.CharField(max_length=30)
+    apellido = models.CharField(max_length=30)
+    cedula = models.CharField(max_length=10)
+    correo = models.CharField(max_length=50, null=True, blank=True)
+    telefono = models.CharField(max_length=30, null=True, blank=True)
+    login = models.CharField(max_length=15)
+    clave = models.CharField(max_length=15)
+
+class Localidad (models.Model):
+    descripcion = models.CharField(max_length=30)
+
+class Escenario (models.Model):
+    descripcion = models.CharField(max_length=30)
+    capacidad = models.IntegerField(default=0)
+
+class Concierto (models.Model):
+    fecha = models.DateTimeField(default=timezone.now)
+    hora_inicio = models.DateTimeField(default=timezone.now)
+    hora_fin = models.DateTimeField(default=timezone.now)
+    descripcion = models.CharField(max_length=30)
+    artista = models.ForeignKey('Artista', on_delete=models.PROTECT, related_name='artista')
+    escenario = models.ForeignKey('Escenario', on_delete=models.PROTECT, related_name='escenario')
+    entradas_disponibles = models.IntegerField(default=0)
+    nombre = models.CharField(max_length=30, null=True, blank=True)    
+
+class Entrada (models.Model):
+    localidad = models.ForeignKey('Localidad', on_delete=models.PROTECT, related_name='localidad')
+    concierto = models.ForeignKey('Concierto', on_delete=models.PROTECT, related_name='concierto')
+    asiento = models.IntegerField(default=0)
+    precio = models.FloatField(default=0)
+
+class Reserva (models.Model):
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+    cliente = models.ForeignKey('Cliente', on_delete=models.PROTECT, related_name='cliente')
+    entrada = models.ForeignKey('Entrada', on_delete=models.PROTECT, related_name='entrada')
+    esta_anulada = models.BooleanField(default=False)
+
+class Pago (models.Model):
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+    reserva = models.ForeignKey('Reserva', on_delete=models.PROTECT, related_name='reserva')
+    forma_pago = models.CharField(max_length=30)
+    total = models.FloatField(default=0)
+
